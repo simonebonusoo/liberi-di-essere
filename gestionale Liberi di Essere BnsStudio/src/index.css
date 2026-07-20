@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Palette runtime. I valori RGB (senza "rgb()") vengono sovrascritti a runtime
+  da applyThemeFromConfig() in src/config/salonConfig.ts, così cambiando i colori
+  nel config cambia l'intero sito senza toccare il CSS.
+*/
+:root {
+  --brand-50: 248 246 243;
+  --brand-100: 238 232 225;
+  --brand-200: 221 208 193;
+  --brand-300: 200 180 158;
+  --brand-400: 176 150 121;
+  --brand-500: 150 122 92;
+  --brand-600: 122 98 72;
+  --brand-700: 95 76 57;
+  --brand-800: 68 55 42;
+  --brand-900: 41 33 26;
+
+  --accent-400: 230 185 128;
+  --accent-500: 214 162 96;
+  --accent-600: 190 138 72;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-brand-50 text-brand-900 font-sans antialiased;
+}
+
+/* Scrollbar discreta */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-brand-300 rounded-full;
+}
+::-webkit-scrollbar-track {
+  @apply bg-brand-100;
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .section {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+  .heading-serif {
+    @apply font-display font-bold tracking-tight;
+  }
+  .input-base {
+    @apply w-full rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-brand-900
+           shadow-sm outline-none transition
+           placeholder:text-brand-400
+           focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30
+           disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .label-base {
+    @apply mb-1.5 block text-sm font-medium text-brand-700;
+  }
+}
