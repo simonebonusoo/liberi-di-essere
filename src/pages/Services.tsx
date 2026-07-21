@@ -5,6 +5,7 @@ import { ServiceCard } from '@/components/ServiceCard';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Button } from '@/components/ui/Button';
+import { Reveal } from '@/components/ui/Reveal';
 import { clsx } from 'clsx';
 
 export function Services() {
@@ -21,7 +22,7 @@ export function Services() {
 
   return (
     <div className="container-page section">
-      <div className="mx-auto max-w-2xl text-center">
+      <Reveal className="mx-auto max-w-2xl text-center">
         <span className="text-sm font-semibold uppercase tracking-widest text-accent-600">
           Listino
         </span>
@@ -29,7 +30,7 @@ export function Services() {
         <p className="mt-3 text-brand-500">
           Scegli il trattamento e prenota in pochi clic.
         </p>
-      </div>
+      </Reveal>
 
       {loading ? (
         <LoadingState />
@@ -39,7 +40,7 @@ export function Services() {
         <EmptyState title="Nessun servizio disponibile" description="Riprova più tardi." />
       ) : (
         <>
-          <div className="mt-10 flex flex-wrap justify-center gap-2">
+          <Reveal className="mt-10 flex flex-wrap justify-center gap-2" delay={80}>
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -54,21 +55,23 @@ export function Services() {
                 {cat}
               </button>
             ))}
-          </div>
+          </Reveal>
 
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((s) => (
-              <ServiceCard key={s.id} service={s} />
+            {filtered.map((s, index) => (
+              <Reveal key={s.id} delay={(index % 6) * 70}>
+                <ServiceCard service={s} />
+              </Reveal>
             ))}
           </div>
 
-          <div className="mt-12 text-center">
+          <Reveal className="mt-12 text-center" delay={120}>
             <Link to="/prenota">
-              <Button size="lg" variant="secondary">
+              <Button size="lg" variant="cta">
                 Prenota ora
               </Button>
             </Link>
-          </div>
+          </Reveal>
         </>
       )}
     </div>

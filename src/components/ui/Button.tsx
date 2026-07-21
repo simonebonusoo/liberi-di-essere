@@ -2,7 +2,7 @@ import { forwardRef, type ButtonHTMLAttributes } from 'react';
 import { Loader2 } from 'lucide-react';
 import { clsx } from 'clsx';
 
-type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'navbar' | 'cta';
 type Size = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -14,13 +14,15 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<Variant, string> = {
   primary:
-    'bg-brand-700 text-white hover:bg-brand-800 focus-visible:ring-brand-500 shadow-sm',
+    'btn-luxury-primary bg-brand-700 text-white hover:bg-brand-800 focus-visible:ring-brand-500 shadow-sm',
   secondary:
-    'bg-accent-500 text-brand-900 hover:bg-accent-600 focus-visible:ring-accent-500 shadow-sm',
+    'btn-luxury-secondary bg-accent-500 text-brand-900 hover:bg-accent-600 focus-visible:ring-accent-500 shadow-sm',
   outline:
-    'border border-brand-300 text-brand-800 bg-white hover:bg-brand-50 focus-visible:ring-brand-400',
-  ghost: 'text-brand-700 hover:bg-brand-100 focus-visible:ring-brand-400',
-  danger: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 shadow-sm',
+    'btn-luxury-outline border border-brand-300 text-brand-800 bg-white hover:bg-brand-50 focus-visible:ring-brand-400',
+  ghost: 'btn-luxury-ghost text-brand-700 hover:bg-brand-100 focus-visible:ring-brand-400',
+  danger: 'btn-luxury-danger bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 shadow-sm',
+  navbar: 'btn-luxury-navbar text-brand-700 hover:bg-brand-100 focus-visible:ring-brand-400',
+  cta: 'btn-luxury-cta bg-gradient-to-r from-accent-500 via-accent-400 to-accent-500 text-brand-950 shadow-soft focus-visible:ring-accent-500',
 };
 
 const sizes: Record<Size, string> = {
@@ -39,7 +41,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       disabled={disabled || loading}
       className={clsx(
         'inline-flex min-h-10 items-center justify-center font-semibold transition duration-200 ease-out',
-        'hover:-translate-y-0.5 hover:shadow-soft active:translate-y-0 active:scale-[0.985]',
+        'btn-luxury relative isolate overflow-hidden hover:-translate-y-px active:translate-y-0 active:scale-[0.985]',
+        '[&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-200 hover:[&_svg]:translate-x-0.5',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
         'disabled:cursor-not-allowed disabled:opacity-60',
         variants[variant],

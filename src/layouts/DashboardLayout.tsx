@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { CalendarDays, LayoutDashboard, Bell, Plus } from 'lucide-react';
 import { clsx } from 'clsx';
 import { Navbar } from '@/components/Navbar';
@@ -12,6 +12,8 @@ const links = [
 ];
 
 export function DashboardLayout() {
+  const location = useLocation();
+
   return (
     <div className="flex min-h-screen flex-col bg-brand-50">
       <Navbar />
@@ -38,7 +40,7 @@ export function DashboardLayout() {
             ))}
           </nav>
         </aside>
-        <div className="min-w-0 flex-1">
+        <div key={location.pathname} className="route-page-enter min-w-0 flex-1">
           <Outlet />
         </div>
       </div>

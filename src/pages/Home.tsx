@@ -11,6 +11,7 @@ import {
 import { salonConfig } from '@/config/salonConfig';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { Reveal } from '@/components/ui/Reveal';
 import { formatPrice, formatDuration } from '@/utils/format';
 
 const iconMap: Record<string, typeof Sparkles> = {
@@ -43,7 +44,7 @@ export function Home() {
             <p className="mt-5 max-w-xl text-lg text-brand-100">{c.heroSubtitle}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/prenota">
-                <Button size="lg" variant="secondary">
+                <Button size="lg" variant="cta">
                   Prenota ora <ArrowRight className="h-5 w-5" />
                 </Button>
               </Link>
@@ -61,24 +62,26 @@ export function Home() {
       <section className="section container-page">
         <SectionHeading eyebrow="I nostri servizi" title="Trattamenti su misura per te" />
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {c.showcaseServices.map((s) => (
-            <Card key={s.name} hover>
-              <h3 className="heading-serif text-lg text-brand-900">{s.name}</h3>
-              <p className="mt-2 text-sm text-brand-500">{s.description}</p>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="flex items-center gap-1 text-sm text-brand-400">
-                  <Clock className="h-4 w-4" /> {formatDuration(s.duration)}
-                </span>
-                <span className="font-bold text-brand-800">{formatPrice(s.price)}</span>
-              </div>
-            </Card>
+          {c.showcaseServices.map((s, index) => (
+            <Reveal key={s.name} delay={index * 80}>
+              <Card hover>
+                <h3 className="heading-serif text-lg text-brand-900">{s.name}</h3>
+                <p className="mt-2 text-sm text-brand-500">{s.description}</p>
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="flex items-center gap-1 text-sm text-brand-400">
+                    <Clock className="h-4 w-4" /> {formatDuration(s.duration)}
+                  </span>
+                  <span className="font-bold text-brand-800">{formatPrice(s.price)}</span>
+                </div>
+              </Card>
+            </Reveal>
           ))}
         </div>
-        <div className="mt-10 text-center">
+        <Reveal className="mt-10 text-center" delay={120}>
           <Link to="/servizi">
             <Button variant="outline">Vedi tutti i servizi</Button>
           </Link>
-        </div>
+        </Reveal>
       </section>
 
       {/* PERCHÉ SCEGLIERE */}
@@ -86,16 +89,16 @@ export function Home() {
         <div className="section container-page">
           <SectionHeading eyebrow="Perché noi" title={c.aboutTitle} subtitle={c.aboutText} />
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {c.whyChooseUs.map((item) => {
+            {c.whyChooseUs.map((item, index) => {
               const Icon = iconMap[item.icon] ?? Sparkles;
               return (
-                <div key={item.title} className="text-center">
+                <Reveal key={item.title} className="text-center" delay={index * 80}>
                   <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-100 text-brand-700">
                     <Icon className="h-7 w-7" />
                   </div>
                   <h3 className="mt-4 font-semibold text-brand-900">{item.title}</h3>
                   <p className="mt-1 text-sm text-brand-500">{item.text}</p>
-                </div>
+                </Reveal>
               );
             })}
           </div>
@@ -107,9 +110,10 @@ export function Home() {
         <SectionHeading eyebrow="Portfolio" title="I nostri lavori" />
         <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:gap-4">
           {c.gallery.map((src, i) => (
-            <div
+            <Reveal
               key={i}
-              className="group aspect-square overflow-hidden rounded-2xl bg-brand-100"
+              className="image-reveal group aspect-square overflow-hidden rounded-2xl bg-brand-100 shadow-card"
+              delay={(i % 3) * 70}
             >
               <img
                 src={src}
@@ -117,7 +121,7 @@ export function Home() {
                 loading="lazy"
                 className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
               />
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -127,16 +131,18 @@ export function Home() {
         <div className="section container-page">
           <SectionHeading eyebrow="Il team" title="I nostri professionisti" />
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {c.team.map((m) => (
-              <Card key={m.name} padded={false} hover className="overflow-hidden">
-                <div className="aspect-[4/5] overflow-hidden bg-brand-100">
+            {c.team.map((m, index) => (
+              <Reveal key={m.name} delay={index * 90}>
+                <Card padded={false} hover className="overflow-hidden">
+                <div className="image-reveal aspect-[4/5] overflow-hidden bg-brand-100">
                   <img src={m.photo} alt={m.name} className="h-full w-full object-cover" loading="lazy" />
                 </div>
                 <div className="p-5">
                   <h3 className="heading-serif text-lg text-brand-900">{m.name}</h3>
                   <p className="text-sm text-accent-600">{m.role}</p>
                 </div>
-              </Card>
+                </Card>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -146,24 +152,26 @@ export function Home() {
       <section className="section container-page">
         <SectionHeading eyebrow="Le sedi" title="Copertino e Sant'Isidoro" />
         <div className="mt-10 grid gap-6 md:grid-cols-2">
-          {c.locations.map((l) => (
-            <Card key={l.id}>
-              <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
-                  <MapPin className="h-5 w-5" />
+          {c.locations.map((l, index) => (
+            <Reveal key={l.id} delay={index * 90}>
+              <Card>
+                <div className="flex items-start gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
+                    <MapPin className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="heading-serif text-lg text-brand-900">{l.name}</h3>
+                    <p className="mt-1 text-sm font-medium text-brand-700">{l.address}</p>
+                    <p className="mt-2 text-sm text-brand-500">{l.info}</p>
+                    {l.seasonal && (
+                      <span className="mt-3 inline-flex rounded-full bg-accent-500/15 px-3 py-1 text-xs font-semibold text-brand-700">
+                        Sede stagionale demo
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <h3 className="heading-serif text-lg text-brand-900">{l.name}</h3>
-                  <p className="mt-1 text-sm font-medium text-brand-700">{l.address}</p>
-                  <p className="mt-2 text-sm text-brand-500">{l.info}</p>
-                  {l.seasonal && (
-                    <span className="mt-3 inline-flex rounded-full bg-accent-500/15 px-3 py-1 text-xs font-semibold text-brand-700">
-                      Sede stagionale demo
-                    </span>
-                  )}
-                </div>
-              </div>
-            </Card>
+              </Card>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -171,7 +179,7 @@ export function Home() {
       {/* ORARI + CONTATTI */}
       <section className="bg-white">
         <div className="section container-page grid gap-10 lg:grid-cols-2">
-          <div>
+          <Reveal>
             <SectionHeading eyebrow="Vieni a trovarci" title="Orari & Contatti" align="left" />
             <div className="mt-6 space-y-2">
               {c.hours.map((h) => (
@@ -190,8 +198,8 @@ export function Home() {
               <MapPin className="h-4 w-4 text-accent-600" />
               {c.contact.address}, {c.contact.postalCode} {c.contact.city}
             </div>
-          </div>
-          <div className="overflow-hidden rounded-2xl border border-brand-100 shadow-card">
+          </Reveal>
+          <Reveal className="image-reveal overflow-hidden rounded-2xl border border-brand-100 shadow-card" delay={120}>
             <iframe
               title="Mappa salone"
               src={c.contact.mapEmbedUrl}
@@ -199,13 +207,13 @@ export function Home() {
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* CTA FINALE */}
       <section className="bg-brand-900">
-        <div className="container-page py-16 text-center">
+        <Reveal className="container-page py-16 text-center">
           <h2 className="heading-serif text-3xl text-white sm:text-4xl">
             Pronto per il tuo prossimo look?
           </h2>
@@ -213,11 +221,11 @@ export function Home() {
             Prenota online in meno di un minuto. Scegli servizio, stylist e orario.
           </p>
           <Link to="/prenota" className="mt-8 inline-block">
-            <Button size="lg" variant="secondary">
+            <Button size="lg" variant="cta">
               Prenota il tuo appuntamento <ArrowRight className="h-5 w-5" />
             </Button>
           </Link>
-        </div>
+        </Reveal>
       </section>
     </div>
   );
@@ -235,12 +243,12 @@ function SectionHeading({
   align?: 'center' | 'left';
 }) {
   return (
-    <div className={align === 'center' ? 'mx-auto max-w-2xl text-center' : 'max-w-2xl'}>
+    <Reveal className={align === 'center' ? 'mx-auto max-w-2xl text-center' : 'max-w-2xl'}>
       <span className="text-sm font-semibold uppercase tracking-widest text-accent-600">
         {eyebrow}
       </span>
       <h2 className="heading-serif mt-2 text-3xl text-brand-900 sm:text-4xl">{title}</h2>
       {subtitle && <p className="mt-3 text-brand-500">{subtitle}</p>}
-    </div>
+    </Reveal>
   );
 }

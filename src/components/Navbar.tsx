@@ -30,13 +30,10 @@ export function Navbar() {
       <nav className="container-page flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <span className="heading-serif text-xl text-brand-900">{salonConfig.logoText}</span>
-          <span className="hidden text-xs font-medium uppercase tracking-widest text-accent-600 sm:inline">
-            {salonConfig.tagline}
-          </span>
           {!isSupabaseConfigured && (
             <span
               title="Dati salvati in locale (nessun Supabase configurato)"
-              className="ml-1 rounded-full bg-accent-500/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-700"
+              className="ml-1 rounded-full border border-accent-500/30 bg-white/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-700 shadow-sm"
             >
               Demo
             </span>
@@ -52,6 +49,7 @@ export function Navbar() {
               className={({ isActive }) =>
                 clsx(
                   'rounded-lg px-3 py-2 text-sm font-medium transition',
+                  'nav-link-luxury',
                   isActive ? 'text-brand-900' : 'text-brand-500 hover:text-brand-800'
                 )
               }
@@ -117,7 +115,7 @@ export function Navbar() {
                 key={l.to}
                 to={l.to}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-brand-700 hover:bg-brand-100"
+                className="nav-link-luxury rounded-lg px-3 py-2.5 text-sm font-medium text-brand-700 hover:bg-brand-100"
               >
                 {l.label}
               </NavLink>

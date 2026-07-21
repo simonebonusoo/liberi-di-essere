@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   CalendarDays,
@@ -30,6 +30,7 @@ const links = [
 export function AdminLayout() {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -39,13 +40,13 @@ export function AdminLayout() {
 
   const SidebarContent = () => (
     <>
-      <Link to="/admin" className="flex items-center gap-2 px-6 py-5">
+      <Link to="/admin" className="flex shrink-0 items-center gap-2 px-6 py-5">
         <span className="heading-serif text-lg text-white">{salonConfig.logoText}</span>
         <span className="rounded bg-accent-500 px-1.5 py-0.5 text-[10px] font-bold text-brand-900">
           ADMIN
         </span>
       </Link>
-      <nav className="flex-1 space-y-1 px-3">
+      <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 pb-4">
         {links.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
@@ -54,7 +55,7 @@ export function AdminLayout() {
             onClick={() => setOpen(false)}
             className={({ isActive }) =>
               clsx(
-                'flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition',
+                'nav-link-luxury flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition',
                 isActive ? 'bg-white/15 text-white' : 'text-brand-200 hover:bg-white/10'
               )
             }
@@ -64,11 +65,14 @@ export function AdminLayout() {
           </NavLink>
         ))}
       </nav>
-      <div className="border-t border-white/10 p-4">
-        <p className="truncate px-2 text-xs text-brand-300">{profile?.email}</p>
+      <div className="mt-auto shrink-0 border-t border-white/10 p-4">
+        <p className="truncate px-2 text-[11px] font-semibold uppercase tracking-widest text-accent-400">
+          admin.chadeo.it
+        </p>
+        <p className="mt-1 truncate px-2 text-xs text-brand-300">{profile?.email}</p>
         <button
           onClick={handleSignOut}
-          className="mt-2 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-brand-200 transition hover:bg-white/10"
+          className="nav-link-luxury mt-2 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-brand-200 transition hover:bg-white/10"
         >
           <LogOut className="h-4 w-4" /> Esci
         </button>
@@ -77,9 +81,9 @@ export function AdminLayout() {
   );
 
   return (
-    <div className="flex min-h-screen bg-brand-50">
+    <div className="flex min-h-dvh bg-brand-50">
       {/* Sidebar desktop */}
-      <aside className="hidden w-64 shrink-0 flex-col bg-brand-900 lg:flex">
+      <aside className="hidden w-64 shrink-0 flex-col bg-brand-900 lg:sticky lg:top-0 lg:flex lg:h-dvh lg:max-h-dvh">
         <SidebarContent />
       </aside>
 
@@ -87,7 +91,7 @@ export function AdminLayout() {
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
-          <aside className="relative flex h-full w-64 flex-col bg-brand-900">
+          <aside className="mobile-sidebar-enter relative flex h-dvh w-64 flex-col bg-brand-900">
             <SidebarContent />
           </aside>
         </div>
@@ -105,13 +109,15 @@ export function AdminLayout() {
           <div className="hidden lg:block" />
           <div className="flex items-center gap-3">
             <NotificationBell />
-            <Link to="/" className="text-sm font-medium text-brand-500 hover:text-brand-800">
+            <Link to="/" className="nav-link-luxury rounded-lg px-2 py-1 text-sm font-medium text-brand-500 hover:text-brand-800">
               Vai al sito
             </Link>
           </div>
         </header>
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          <Outlet />
+        <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
+          <div key={location.pathname} className="admin-page-enter">
+            <Outlet />
+          </div>
         </main>
       </div>
       {/* Chiusura menu mobile via X flottante */}
