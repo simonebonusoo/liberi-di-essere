@@ -1,11 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Check } from 'lucide-react';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useAuth } from '@/context/AuthContext';
+import { resolveNotificationRoute } from '@/lib/notifications';
 import { formatDateTime } from '@/utils/format';
 
 export function NotificationBell() {
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const { isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -16,6 +20,18 @@ export function NotificationBell() {
     document.addEventListener('mousedown', onClick);
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
+
+  const openNotification = async (notificationId: string) => {
+    const notification = notifications.find((n) => n.id === notificationId);
+    if (!notification) return;
+    try {
+      await markAsRead(notification.id);
+    } catch {
+      /* Il refetch nel hook ripristina lo stato; la navigazione resta utile. */
+    }
+    setOpen(false);
+    navigate(resolveNotificationRoute(notification, isAdmin));
+  };
 
   return (
     <div className="relative" ref={ref}>
@@ -54,7 +70,7 @@ export function NotificationBell() {
               notifications.slice(0, 12).map((n) => (
                 <button
                   key={n.id}
-                  onClick={() => markAsRead(n.id)}
+                  onClick={() => openNotification(n.id)}
                   className={`flex w-full flex-col gap-0.5 border-b border-brand-50 px-4 py-3 text-left transition hover:bg-brand-50 ${
                     !n.read ? 'bg-brand-50/60' : ''
                   }`}
@@ -72,7 +88,7 @@ export function NotificationBell() {
             )}
           </div>
           <Link
-            to="/dashboard/notifiche"
+            to={isAdmin ? '/admin/notifiche' : '/dashboard/notifiche'}
             onClick={() => setOpen(false)}
             className="block border-t border-brand-100 px-4 py-3 text-center text-sm font-medium text-brand-700 hover:bg-brand-50"
           >

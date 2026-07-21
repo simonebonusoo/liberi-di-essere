@@ -181,7 +181,7 @@ export function Home() {
                 >
                   <span className="font-medium text-brand-800">{h.label}</span>
                   <span className="text-brand-500">
-                    {h.open && h.close ? `${h.open} – ${h.close}` : 'Chiuso'}
+                    {h.open && h.close ? `${h.open} / ${h.close}` : 'Chiuso'}
                   </span>
                 </div>
               ))}

@@ -21,6 +21,7 @@ import { fetchStaffAvailability, fetchClosuresForDate } from '@/lib/scheduling';
 import { fetchDayConfirmedAppointments, createAppointment } from '@/lib/appointments';
 import { formatDate, formatDuration, formatPrice } from '@/utils/format';
 import { salonConfig } from '@/config/salonConfig';
+import { isLocationBookableOnDate } from '@/utils/locations';
 import type { Location, Service } from '@/types/database';
 
 const ANY_STAFF = 'any';
@@ -84,6 +85,10 @@ export function Booking() {
     setLoadingSlots(true);
     setSlot(null);
     try {
+      if (!isLocationBookableOnDate(location, date)) {
+        setSlots([]);
+        return;
+      }
       const candidates =
         staffChoice === ANY_STAFF
           ? compatibleStaff
@@ -118,14 +123,46 @@ export function Booking() {
   }, [step, date, loadSlots]);
 
   const handleConfirm = async () => {
+    if (submitting) return;
     if (!service || !slot || !location) return;
     if (!session) {
       toast('Accedi per completare la prenotazione');
       navigate('/login', { state: { from: '/prenota' } });
       return;
     }
+    if (!isLocationBookableOnDate(location, new Date(slot.start))) {
+      toast.error('La sede selezionata non è prenotabile nella data scelta.');
+      setStep(0);
+      return;
+    }
     setSubmitting(true);
     try {
+      const candidates =
+        staffChoice === ANY_STAFF
+          ? compatibleStaff
+          : compatibleStaff.filter((s) => s.id === staffChoice);
+      const staffIds = candidates.map((s) => s.id);
+      const [availability, closures, appointments] = await Promise.all([
+        fetchStaffAvailability(staffIds),
+        fetchClosuresForDate(new Date(slot.start), location.id),
+        fetchDayConfirmedAppointments(new Date(slot.start)),
+      ]);
+      const freshSlots = computeAvailableSlots({
+        date: new Date(slot.start),
+        serviceDuration: service.duration_minutes,
+        locationId: location.id,
+        serviceId: service.id,
+        staff: candidates,
+        availability,
+        appointments,
+        closures,
+      });
+      const stillAvailable = freshSlots.some(
+        (fresh) => fresh.start === slot.start && fresh.staffId === slot.staffId
+      );
+      if (!stillAvailable) {
+        throw new Error('Questo orario non è più disponibile. Scegli un altro slot.');
+      }
       await createAppointment({
         clientId: session.user.id,
         staffId: slot.staffId,
@@ -205,6 +242,7 @@ export function Booking() {
               <div className="grid gap-4 sm:grid-cols-2">
                 {locations.map((l) => (
                   <Card
+                    as="button"
                     key={l.id}
                     hover
                     onClick={() => {

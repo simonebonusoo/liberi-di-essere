@@ -14,6 +14,7 @@ export function StaffCard({ staff, selected, onSelect, compact }: StaffCardProps
   const interactive = Boolean(onSelect);
   return (
     <Card
+      as={interactive ? 'button' : 'div'}
       hover={interactive}
       padded={!compact}
       onClick={() => onSelect?.(staff)}

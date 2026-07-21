@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { addDays, format } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Plus, CalendarDays } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { clsx } from 'clsx';
 
 import { supabase } from '@/lib/supabase';
@@ -12,6 +13,7 @@ import { useLocations } from '@/hooks/useLocations';
 import { useAuth } from '@/context/AuthContext';
 import {
   fetchAppointmentsInRange,
+  fetchAppointmentById,
   createAppointment,
   cancelAppointment,
   updateAppointmentStatus,
@@ -25,13 +27,15 @@ import { StatusBadge } from '@/components/ui/Badge';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { formatPrice, formatTime } from '@/utils/format';
-import type { AppointmentStatus, AppointmentWithRelations, Profile } from '@/types/database';
+import { isLocationBookableOnDate } from '@/utils/locations';
+import type { AppointmentStatus, AppointmentWithRelations, Location, Profile, Service, StaffMember } from '@/types/database';
 
 export function AdminCalendar() {
   const { profile } = useAuth();
   const { services } = useServices(false);
   const { staff } = useStaff(false);
   const { locations } = useLocations(false);
+  const [searchParams] = useSearchParams();
 
   const [day, setDay] = useState<Date>(new Date());
   const [appointments, setAppointments] = useState<AppointmentWithRelations[]>([]);
@@ -60,6 +64,37 @@ export function AdminCalendar() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    const targetId = searchParams.get('appointment');
+    if (!targetId) return;
+    const target = appointments.find((a) => a.id === targetId);
+    if (target) {
+      setDetail(target);
+      return;
+    }
+
+    let cancelled = false;
+    const loadTargetDay = async () => {
+      try {
+        const appointment = await fetchAppointmentById(targetId);
+        if (cancelled) return;
+        setStaffFilter('all');
+        setStatusFilter('all');
+        setDay(new Date(appointment.starts_at));
+        setDetail(appointment);
+      } catch (e) {
+        if (!cancelled) {
+          toast.error(e instanceof Error ? e.message : 'Appuntamento non trovato');
+        }
+      }
+    };
+
+    void loadTargetDay();
+    return () => {
+      cancelled = true;
+    };
+  }, [appointments, searchParams]);
 
   const filtered = useMemo(
     () =>
@@ -166,6 +201,7 @@ export function AdminCalendar() {
               onClick={() => setDetail(a)}
               className={clsx(
                 'flex w-full items-center gap-4 rounded-2xl border bg-white p-4 text-left shadow-card transition hover:border-brand-300',
+                searchParams.get('appointment') === a.id && 'ring-2 ring-accent-500',
                 a.status === 'cancelled' ? 'border-red-100 opacity-70' : 'border-brand-100'
               )}
             >
@@ -260,9 +296,9 @@ function CreateAppointmentModal({
   open: boolean;
   onClose: () => void;
   defaultDate: Date;
-  services: { id: string; name: string; duration_minutes: number; price: number }[];
-  staff: { id: string; full_name: string }[];
-  locations: { id: string; name: string }[];
+  services: Service[];
+  staff: StaffMember[];
+  locations: Location[];
   adminId: string;
   onCreated: () => void;
 }) {
@@ -291,7 +327,29 @@ function CreateAppointmentModal({
       return;
     }
     const service = services.find((s) => s.id === serviceId)!;
+    const member = staff.find((s) => s.id === staffId)!;
+    const location = locations.find((l) => l.id === locationId)!;
     const starts = new Date(`${date}T${time}:00`);
+    if (starts.getTime() <= Date.now()) {
+      toast.error('Non puoi creare un appuntamento in un orario passato.');
+      return;
+    }
+    if (!isLocationBookableOnDate(location, starts)) {
+      toast.error('La sede selezionata non è prenotabile nella data scelta.');
+      return;
+    }
+    if (service.location_ids.length && !service.location_ids.includes(locationId)) {
+      toast.error('Il servizio non è disponibile nella sede selezionata.');
+      return;
+    }
+    if (service.staff_ids.length && !service.staff_ids.includes(staffId)) {
+      toast.error('L’operatore non è abilitato per questo servizio.');
+      return;
+    }
+    if (member.location_ids.length && !member.location_ids.includes(locationId)) {
+      toast.error('L’operatore non lavora nella sede selezionata.');
+      return;
+    }
     const ends = new Date(starts.getTime() + service.duration_minutes * 60000);
     setSubmitting(true);
     try {

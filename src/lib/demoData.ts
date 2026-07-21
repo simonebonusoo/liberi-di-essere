@@ -328,9 +328,9 @@ export function buildDemoDb() {
       mkAppt('ap-5', 'demo-client-3', ST.giulia, SV.piegaOnde, LOC.copertino, iso(-3, 16), 50, 32, 'cancelled'),
     ],
     notifications: [
-      { id: 'nt-1', user_id: 'demo-client', title: 'Prenotazione confermata', message: 'Taglio e piega è confermato in ambiente demo.', type: 'booking_created', delivery_status: 'demo_simulated', read: false, appointment_id: 'ap-1', created_at: iso(-1, 9) },
-      { id: 'nt-2', user_id: 'demo-admin', title: 'Nuova prenotazione demo', message: 'Cliente Demo ha prenotato Taglio e piega.', type: 'booking_created', delivery_status: 'demo_simulated', read: false, appointment_id: 'ap-1', created_at: iso(-1, 9) },
-      { id: 'nt-3', user_id: 'demo-super-admin', title: 'Ambiente demo attivo', message: 'Le notifiche sono simulate: nessuna email/SMS/WhatsApp reale viene inviata.', type: 'system', delivery_status: 'demo_simulated', read: false, appointment_id: null, created_at: iso(-2, 12) },
+      { id: 'nt-1', user_id: 'demo-client', title: 'Prenotazione confermata', message: 'Taglio e piega è confermato in ambiente demo.', type: 'booking_created', entity_type: 'appointment', entity_id: 'ap-1', route: '/dashboard/appuntamenti?appointment=ap-1', action_url: null, metadata: {}, delivery_status: 'demo_simulated', read: false, read_at: null, appointment_id: 'ap-1', created_at: iso(-1, 9) },
+      { id: 'nt-2', user_id: 'demo-admin', title: 'Nuova prenotazione demo', message: 'Cliente Demo ha prenotato Taglio e piega.', type: 'booking_created', entity_type: 'appointment', entity_id: 'ap-1', route: '/admin/calendario?appointment=ap-1', action_url: null, metadata: {}, delivery_status: 'demo_simulated', read: false, read_at: null, appointment_id: 'ap-1', created_at: iso(-1, 9) },
+      { id: 'nt-3', user_id: 'demo-super-admin', title: 'Ambiente demo attivo', message: 'Le notifiche sono simulate: nessuna email/SMS/WhatsApp reale viene inviata.', type: 'system', entity_type: 'settings', entity_id: null, route: '/admin/impostazioni', action_url: null, metadata: {}, delivery_status: 'demo_simulated', read: false, read_at: null, appointment_id: null, created_at: iso(-2, 12) },
     ],
     settings: [
       {

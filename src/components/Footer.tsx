@@ -52,7 +52,7 @@ export function Footer() {
               <li key={h.day} className="flex justify-between gap-4">
                 <span>{h.label}</span>
                 <span className="text-brand-300">
-                  {h.open && h.close ? `${h.open}–${h.close}` : 'Chiuso'}
+                  {h.open && h.close ? `${h.open} / ${h.close}` : 'Chiuso'}
                 </span>
               </li>
             ))}

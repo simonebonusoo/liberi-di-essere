@@ -37,8 +37,8 @@ export function AdminSettings() {
 
   // Form nuova finestra oraria
   const [newDay, setNewDay] = useState('2');
-  const [newStart, setNewStart] = useState('09:00');
-  const [newEnd, setNewEnd] = useState('18:00');
+  const [newStart, setNewStart] = useState('08:30');
+  const [newEnd, setNewEnd] = useState('13:00');
 
   // Form nuova chiusura
   const [closureStaff, setClosureStaff] = useState('');
@@ -67,7 +67,7 @@ export function AdminSettings() {
   }, [loadData]);
 
   const staffAvailability = availability
-    .filter((a) => a.staff_id === selectedStaff)
+    .filter((a) => a.staff_id === selectedStaff && (a.location_id ?? '') === selectedLocation)
     .sort((a, b) => {
       const order = [1, 2, 3, 4, 5, 6, 0];
       return order.indexOf(a.weekday) - order.indexOf(b.weekday) ||
@@ -76,7 +76,18 @@ export function AdminSettings() {
 
   const addWindow = async () => {
     if (!selectedStaff) return toast.error('Seleziona uno stylist');
+    if (!selectedLocation) return toast.error('Seleziona una sede');
     if (newEnd <= newStart) return toast.error('L\'orario di fine deve essere dopo l\'inizio');
+    const sameDayWindows = availability.filter(
+      (a) =>
+        a.staff_id === selectedStaff &&
+        (a.location_id ?? '') === selectedLocation &&
+        a.weekday === Number(newDay)
+    );
+    const overlaps = sameDayWindows.some(
+      (a) => newStart < a.end_time.slice(0, 5) && newEnd > a.start_time.slice(0, 5)
+    );
+    if (overlaps) return toast.error('La fascia si sovrappone a un orario già configurato.');
     const { error } = await supabase.from('staff_availability').insert({
       staff_id: selectedStaff,
       location_id: selectedLocation || null,
@@ -86,6 +97,43 @@ export function AdminSettings() {
     });
     if (error) return toast.error(error.message);
     toast.success('Fascia oraria aggiunta');
+    await loadData();
+  };
+
+  const copyTuesdayToDemoWeek = async () => {
+    if (!selectedStaff || !selectedLocation) return toast.error('Seleziona stylist e sede');
+    const source = availability.filter(
+      (a) =>
+        a.staff_id === selectedStaff &&
+        (a.location_id ?? '') === selectedLocation &&
+        a.weekday === 2
+    );
+    if (source.length === 0) return toast.error('Configura prima gli orari del martedì');
+    const payload = [3, 4, 5, 6].flatMap((weekday) =>
+      source
+        .filter(
+          (a) =>
+            !availability.some(
+              (existing) =>
+                existing.staff_id === selectedStaff &&
+                (existing.location_id ?? '') === selectedLocation &&
+                existing.weekday === weekday &&
+                existing.start_time === a.start_time &&
+                existing.end_time === a.end_time
+            )
+        )
+        .map((a) => ({
+          staff_id: selectedStaff,
+          location_id: selectedLocation,
+          weekday,
+          start_time: a.start_time,
+          end_time: a.end_time,
+        }))
+    );
+    if (payload.length === 0) return toast('Gli orari demo sono già copiati sugli altri giorni.');
+    const { error } = await supabase.from('staff_availability').insert(payload);
+    if (error) return toast.error('Alcune fasce esistono già o non sono valide. Controlla gli orari salvati.');
+    toast.success('Orari copiati da martedì a sabato');
     await loadData();
   };
 
@@ -273,6 +321,11 @@ export function AdminSettings() {
               <Plus className="h-4 w-4" /> Aggiungi
             </Button>
           </div>
+        </div>
+        <div className="mt-3">
+          <Button variant="outline" size="sm" onClick={copyTuesdayToDemoWeek}>
+            Copia martedì su mercoledì-sabato
+          </Button>
         </div>
       </Card>
 

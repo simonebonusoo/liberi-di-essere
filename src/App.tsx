@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/context/AuthContext';
 import { AppRoutes } from '@/routes/AppRoutes';
+import { ScrollToTop } from '@/routes/ScrollToTop';
 import { applyThemeFromConfig } from '@/config/salonConfig';
 
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProvider>
         <AppRoutes />
         <Toaster

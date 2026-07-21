@@ -10,17 +10,16 @@ export async function fetchStaffAvailability(staffIds?: string[]) {
   return (data ?? []) as StaffAvailability[];
 }
 
-export async function fetchClosuresForDate(date: Date, locationId?: string) {
+export async function fetchClosuresForDate(date: Date, _locationId?: string) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
   const day = `${y}-${m}-${d}`;
-  let query = supabase
+  const query = supabase
     .from('salon_closures')
     .select('*')
     .lte('start_date', day)
     .gte('end_date', day);
-  if (locationId) query = query.in('location_id', [locationId, null]);
   const { data, error } = await query;
   if (error) throw new Error(error.message);
   return (data ?? []) as SalonClosure[];

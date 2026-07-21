@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { CalendarPlus } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -16,11 +16,19 @@ type Tab = 'upcoming' | 'past';
 
 export function ClientAppointments() {
   const { upcoming, past, loading, refetch } = useClientAppointments();
+  const [searchParams] = useSearchParams();
   const [tab, setTab] = useState<Tab>('upcoming');
   const [toCancel, setToCancel] = useState<AppointmentWithRelations | null>(null);
   const [cancelling, setCancelling] = useState(false);
 
   const list = tab === 'upcoming' ? upcoming : past;
+  const highlightedId = searchParams.get('appointment');
+
+  useEffect(() => {
+    if (!highlightedId || loading) return;
+    if (past.some((a) => a.id === highlightedId)) setTab('past');
+    else if (upcoming.some((a) => a.id === highlightedId)) setTab('upcoming');
+  }, [highlightedId, loading, past, upcoming]);
 
   const confirmCancel = async () => {
     if (!toCancel) return;
@@ -80,7 +88,9 @@ export function ClientAppointments() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {list.map((a) => (
-            <AppointmentCard key={a.id} appointment={a} onCancel={setToCancel} />
+            <div key={a.id} id={`appointment-${a.id}`}>
+              <AppointmentCard appointment={a} onCancel={setToCancel} highlighted={highlightedId === a.id} />
+            </div>
           ))}
         </div>
       )}

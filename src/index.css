@@ -25,11 +25,15 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 body {
   @apply bg-brand-50 text-brand-900 font-sans antialiased;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 /* Scrollbar discreta */
@@ -51,6 +55,12 @@ body {
   .section {
     @apply py-16 sm:py-20 lg:py-24;
   }
+  .surface-enter {
+    animation: surface-enter 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .luxury-focus {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 focus-visible:ring-offset-2;
+  }
   .heading-serif {
     @apply font-display font-bold tracking-tight;
   }
@@ -63,5 +73,40 @@ body {
   }
   .label-base {
     @apply mb-1.5 block text-sm font-medium text-brand-700;
+  }
+}
+
+@keyframes surface-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.992);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes soft-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

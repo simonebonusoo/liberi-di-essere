@@ -10,6 +10,7 @@ import {
   LogOut,
   Menu,
   X,
+  Bell,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { salonConfig } from '@/config/salonConfig';
@@ -19,6 +20,7 @@ import { NotificationBell } from '@/components/NotificationBell';
 const links = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/calendario', label: 'Calendario', icon: CalendarDays, end: false },
+  { to: '/admin/notifiche', label: 'Notifiche', icon: Bell, end: false },
   { to: '/admin/servizi', label: 'Servizi', icon: Scissors, end: false },
   { to: '/admin/staff', label: 'Staff', icon: UserCog, end: false },
   { to: '/admin/clienti', label: 'Clienti', icon: Users, end: false },

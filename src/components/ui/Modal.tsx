@@ -42,7 +42,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
         role="dialog"
         aria-modal="true"
         className={clsx(
-          'relative z-10 w-full rounded-2xl bg-white shadow-soft animate-fade-in',
+          'relative z-10 max-h-[calc(100vh-2rem)] w-full overflow-hidden rounded-2xl bg-white shadow-soft surface-enter',
           sizes[size]
         )}
       >
@@ -56,7 +56,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="px-6 py-5">{children}</div>
+        <div className="max-h-[calc(100vh-7rem)] overflow-y-auto px-6 py-5">{children}</div>
       </div>
     </div>,
     document.body

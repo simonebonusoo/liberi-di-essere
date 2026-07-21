@@ -76,7 +76,7 @@ function busyRanges(
 ): Array<[number, number]> {
   const buffer = salonConfig.booking.bufferMinutes;
   return appointments
-    .filter((a) => a.staff_id === staffId && a.status === 'confirmed')
+    .filter((a) => a.staff_id === staffId && ['pending', 'confirmed'].includes(a.status))
     .map((a) => {
       const s = new Date(a.starts_at);
       const e = new Date(a.ends_at);

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { isLocationBookableOnDate } from '@/utils/locations';
 import type { Location } from '@/types/database';
 
 export function useLocations(onlyBookable = true) {
@@ -14,7 +15,10 @@ export function useLocations(onlyBookable = true) {
     if (onlyBookable) query = query.eq('active', true);
     const { data, error } = await query;
     if (error) setError(error.message);
-    else setLocations((data ?? []) as Location[]);
+    else {
+      const rows = (data ?? []) as Location[];
+      setLocations(onlyBookable ? rows.filter((l) => isLocationBookableOnDate(l, new Date())) : rows);
+    }
     setLoading(false);
   }, [onlyBookable]);
 

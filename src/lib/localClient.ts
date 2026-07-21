@@ -67,7 +67,22 @@ function emitInsert(table: string, row: Row) {
 
 // ---- Notifiche (equivalente del trigger SQL) --------------------------------
 function pushNotification(db: Db, n: Row) {
-  const full = { id: uid(), read: false, appointment_id: null, type: 'system', message: '', created_at: nowIso(), ...n };
+  const full = {
+    id: uid(),
+    read: false,
+    read_at: null,
+    appointment_id: null,
+    type: 'system',
+    entity_type: null,
+    entity_id: null,
+    route: null,
+    action_url: null,
+    metadata: {},
+    delivery_status: 'demo_simulated',
+    message: '',
+    created_at: nowIso(),
+    ...n,
+  };
   db.notifications.push(full);
   emitInsert('notifications', full);
 }
@@ -81,11 +96,11 @@ function notifyOnAppointment(db: Db, appt: Row, event: 'insert' | 'cancel') {
   const lName = location?.name ?? 'Sede';
   const cName = client?.full_name || client?.email || 'Cliente';
   if (event === 'insert') {
-    pushNotification(db, { user_id: appt.client_id, title: 'Prenotazione confermata', message: `${sName} il ${when} presso ${lName} è confermato in ambiente demo.`, type: 'booking_created', delivery_status: 'demo_simulated', appointment_id: appt.id });
-    admins.forEach((a) => pushNotification(db, { user_id: a.id, title: 'Nuova prenotazione demo', message: `${cName} ha prenotato ${sName} per il ${when} presso ${lName}.`, type: 'booking_created', delivery_status: 'demo_simulated', appointment_id: appt.id }));
+    pushNotification(db, { user_id: appt.client_id, title: 'Prenotazione confermata', message: `${sName} il ${when} presso ${lName} è confermato in ambiente demo.`, type: 'booking_created', entity_type: 'appointment', entity_id: appt.id, route: `/dashboard/appuntamenti?appointment=${appt.id}`, appointment_id: appt.id });
+    admins.forEach((a) => pushNotification(db, { user_id: a.id, title: 'Nuova prenotazione demo', message: `${cName} ha prenotato ${sName} per il ${when} presso ${lName}.`, type: 'booking_created', entity_type: 'appointment', entity_id: appt.id, route: `/admin/calendario?appointment=${appt.id}`, appointment_id: appt.id }));
   } else {
-    pushNotification(db, { user_id: appt.client_id, title: 'Prenotazione cancellata', message: `${sName} del ${when} è stato annullato.`, type: 'booking_cancelled', delivery_status: 'demo_simulated', appointment_id: appt.id });
-    admins.forEach((a) => pushNotification(db, { user_id: a.id, title: 'Prenotazione cancellata', message: `${cName} ha annullato ${sName} del ${when}.`, type: 'booking_cancelled', delivery_status: 'demo_simulated', appointment_id: appt.id }));
+    pushNotification(db, { user_id: appt.client_id, title: 'Prenotazione cancellata', message: `${sName} del ${when} è stato annullato.`, type: 'booking_cancelled', entity_type: 'appointment', entity_id: appt.id, route: `/dashboard/appuntamenti?appointment=${appt.id}`, appointment_id: appt.id });
+    admins.forEach((a) => pushNotification(db, { user_id: a.id, title: 'Prenotazione cancellata', message: `${cName} ha annullato ${sName} del ${when}.`, type: 'booking_cancelled', entity_type: 'appointment', entity_id: appt.id, route: `/admin/calendario?appointment=${appt.id}`, appointment_id: appt.id }));
   }
 }
 
@@ -153,6 +168,17 @@ class LocalQuery implements PromiseLike<{ data: any; error: any }> {
       const items = Array.isArray(this.payload) ? this.payload : [this.payload!];
       const inserted: Row[] = [];
       for (const it of items) {
+        if (this.table === 'staff_availability') {
+          const clash = list.some(
+            (r) =>
+              r.staff_id === it.staff_id &&
+              (r.location_id ?? null) === (it.location_id ?? null) &&
+              r.weekday === it.weekday &&
+              it.start_time < r.end_time &&
+              it.end_time > r.start_time
+          );
+          if (clash) return { data: null, error: { code: '23505', message: 'Fascia oraria sovrapposta o duplicata' } };
+        }
         // anti-overlap per appuntamenti confermati (come exclusion constraint)
         if (this.table === 'appointments' && (it.status ?? 'confirmed') === 'confirmed') {
           const clash = list.some(

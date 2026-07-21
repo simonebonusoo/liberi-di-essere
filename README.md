@@ -69,8 +69,23 @@ Il reset ripristina dati demo e disconnette l'utente.
 
 ```bash
 npm run lint
+npm run typecheck
 npm test
 npm run build
+```
+
+## Documentazione
+
+La consegna finale e organizzata in:
+
+- `docs/internal/`: audit, architettura, database, sicurezza, deployment e manutenzione BNS Studio.
+- `docs/client/`: guide operative e presentazione per il cliente.
+- `docs/pdf/internal/` e `docs/pdf/client/`: PDF generati dagli stessi markdown.
+
+Per rigenerare i PDF usare il Python bundle di Codex:
+
+```bash
+/Users/simonebonuso/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 scripts/generate_pdfs.py
 ```
 
 ## Deploy

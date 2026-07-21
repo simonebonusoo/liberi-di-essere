@@ -11,15 +11,16 @@ interface AppointmentCardProps {
   onCancel?: (appointment: AppointmentWithRelations) => void;
   /** Mostra il nome del cliente (vista admin). */
   showClient?: boolean;
+  highlighted?: boolean;
 }
 
-export function AppointmentCard({ appointment, onCancel, showClient }: AppointmentCardProps) {
+export function AppointmentCard({ appointment, onCancel, showClient, highlighted }: AppointmentCardProps) {
   const { service, staff, client, location, status, starts_at, price } = appointment;
   const cancellable =
     status === 'confirmed' && Boolean(onCancel) && canCancelAppointment(starts_at);
 
   return (
-    <Card>
+    <Card className={highlighted ? 'ring-2 ring-accent-500' : undefined}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="heading-serif text-lg text-brand-900">

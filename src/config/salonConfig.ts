@@ -103,11 +103,11 @@ export const salonConfig: SalonConfig = {
 
   hours: [
     { day: 1, label: 'Lunedì', open: null, close: null },
-    { day: 2, label: 'Martedì', open: '08:30 / 15:30', close: '13:00 / 19:30' },
-    { day: 3, label: 'Mercoledì', open: '08:30 / 15:30', close: '13:00 / 19:30' },
-    { day: 4, label: 'Giovedì', open: '08:30 / 15:30', close: '13:00 / 19:30' },
-    { day: 5, label: 'Venerdì', open: '08:30 / 15:30', close: '13:00 / 19:30' },
-    { day: 6, label: 'Sabato', open: '08:30 / 15:30', close: '13:00 / 19:30' },
+    { day: 2, label: 'Martedì', open: '08:30-13:00', close: '15:30-19:30' },
+    { day: 3, label: 'Mercoledì', open: '08:30-13:00', close: '15:30-19:30' },
+    { day: 4, label: 'Giovedì', open: '08:30-13:00', close: '15:30-19:30' },
+    { day: 5, label: 'Venerdì', open: '08:30-13:00', close: '15:30-19:30' },
+    { day: 6, label: 'Sabato', open: '08:30-13:00', close: '15:30-19:30' },
     { day: 0, label: 'Domenica', open: null, close: null },
   ],
 

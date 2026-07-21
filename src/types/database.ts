@@ -136,8 +136,14 @@ export interface Notification {
   title: string;
   message: string;
   type: NotificationType;
+  entity_type: string | null;
+  entity_id: string | null;
+  route: string | null;
+  action_url: string | null;
+  metadata: Record<string, unknown>;
   delivery_status: NotificationDeliveryStatus;
   read: boolean;
+  read_at: string | null;
   appointment_id: string | null;
   created_at: string;
 }

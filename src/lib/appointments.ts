@@ -89,6 +89,17 @@ export async function fetchAppointmentsInRange(fromIso: string, toIso: string) {
   return (data ?? []) as unknown as AppointmentWithRelations[];
 }
 
+/** Singolo appuntamento con relazioni, usato per deep link da notifiche. */
+export async function fetchAppointmentById(id: string) {
+  const { data, error } = await supabase
+    .from('appointments')
+    .select(SELECT_WITH_RELATIONS)
+    .eq('id', id)
+    .single();
+  if (error) throw new Error(error.message);
+  return data as unknown as AppointmentWithRelations;
+}
+
 /** Appuntamenti confermati di un giorno per il calcolo disponibilità. */
 export async function fetchDayConfirmedAppointments(date: Date) {
   const start = new Date(date);

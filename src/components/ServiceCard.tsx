@@ -14,6 +14,7 @@ export function ServiceCard({ service, selected, onSelect }: ServiceCardProps) {
   const interactive = Boolean(onSelect);
   return (
     <Card
+      as={interactive ? 'button' : 'div'}
       hover={interactive}
       onClick={() => onSelect?.(service)}
       className={clsx(

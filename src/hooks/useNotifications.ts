@@ -47,15 +47,29 @@ export function useNotifications() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const markAsRead = useCallback(async (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
-    await supabase.from('notifications').update({ read: true }).eq('id', id);
-  }, []);
+    const readAt = new Date().toISOString();
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true, read_at: readAt } : n)));
+    const { error } = await supabase.from('notifications').update({ read: true, read_at: readAt }).eq('id', id);
+    if (error) {
+      await fetchNotifications();
+      throw new Error(error.message);
+    }
+  }, [fetchNotifications]);
 
   const markAllAsRead = useCallback(async () => {
     if (!userId) return;
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-    await supabase.from('notifications').update({ read: true }).eq('user_id', userId).eq('read', false);
-  }, [userId]);
+    const readAt = new Date().toISOString();
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true, read_at: readAt })));
+    const { error } = await supabase
+      .from('notifications')
+      .update({ read: true, read_at: readAt })
+      .eq('user_id', userId)
+      .eq('read', false);
+    if (error) {
+      await fetchNotifications();
+      throw new Error(error.message);
+    }
+  }, [userId, fetchNotifications]);
 
   return { notifications, unreadCount, loading, markAsRead, markAllAsRead, refetch: fetchNotifications };
 }

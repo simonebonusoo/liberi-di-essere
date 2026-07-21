@@ -6,6 +6,7 @@
   "description": "Gestionale modulare per saloni di parrucchieri - BNS Studio",
   "scripts": {
     "dev": "vite",
+    "typecheck": "tsc -b",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
