@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: /
-
-Sitemap: https://demo.liberidiessere.bnsstudio.it/sitemap.xml
