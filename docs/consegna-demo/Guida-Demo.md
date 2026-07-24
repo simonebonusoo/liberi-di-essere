@@ -1,7 +1,7 @@
 # Guida all'utilizzo della Demo
 
 **Cliente:** Liberi di Essere
-**A cura di:** BNS Studio
+**A cura di:** BnsStudio
 **Periodo:** Luglio 2026
 
 ---
@@ -10,7 +10,7 @@
 
 Grazie per il tempo che dedicherete a questa demo.
 
-Questa breve guida vi accompagna nella prova del sito realizzato da BNS Studio per **Liberi di Essere**. È pensata per essere semplice: non serve alcuna competenza tecnica per esplorare la demo e dirci cosa ne pensate.
+Questa breve guida vi accompagna nella prova del sito realizzato da BnsStudio per **Liberi di Essere**. È pensata per essere semplice: non serve alcuna competenza tecnica per esplorare la demo e dirci cosa ne pensate.
 
 ## La vostra demo è online
 
@@ -80,4 +80,4 @@ Per aiutarvi, insieme a questa guida trovate il secondo documento — **Raccolta
 
 Grazie ancora per la vostra attenzione. Provate la demo con curiosità e senza timore di "rompere" qualcosa: è fatta apposta per essere esplorata.
 
-*BNS Studio*
+*BnsStudio*

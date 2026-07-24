@@ -1,7 +1,7 @@
 """
-Generatore PDF premium per i documenti di consegna demo "Liberi di Essere" (BNS Studio).
+Generatore PDF premium per i documenti di consegna demo "Liberi di Essere" (BnsStudio).
 
-Trasforma i due markdown editoriali in PDF impaginati con identità BNS Studio:
+Trasforma i due markdown editoriali in PDF impaginati con identità BnsStudio:
 - eyebrow uppercase con tracking
 - titoli importanti
 - numerazione 01 / 02 / 03 ...
@@ -22,9 +22,10 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm, mm
+from reportlab.lib.utils import ImageReader
 from reportlab.platypus import (
     Flowable,
-    KeepTogether,
+    PageBreak,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
@@ -33,6 +34,8 @@ from reportlab.platypus import (
 )
 
 HERE = Path(__file__).resolve().parent
+LOGO = HERE / "assets" / "bnsstudio-logo.png"
+COVER_FOOTER = "Demo valida fino al 31 Luglio"
 
 # Palette allineata a src/config/salonConfig.ts
 BRAND = colors.HexColor("#2f665f")       # verde salvia scuro
@@ -45,8 +48,20 @@ BOX_BG = colors.HexColor("#f4f1ec")      # sfondo box
 RULE_WRITE = colors.HexColor("#c9c2b8")  # righe per scrittura
 
 DOCS = [
-    ("Guida-Demo.md", "Liberi-di-Essere_Guida-Demo.pdf", "Guida all'utilizzo della Demo"),
-    ("Raccolta-Feedback.md", "Liberi-di-Essere_Raccolta-Feedback.pdf", "Raccolta Feedback"),
+    {
+        "src": "Guida-Demo.md",
+        "out": "Liberi-di-Essere_Guida-Demo.pdf",
+        "page_title": "Guida all'utilizzo della Demo",
+        "cover_title": "GUIDA ALLA DEMO",
+        "cover_subtitle": "Sviluppata per Liberi di essere",
+    },
+    {
+        "src": "Raccolta-Feedback.md",
+        "out": "Liberi-di-Essere_Raccolta-Feedback.pdf",
+        "page_title": "Raccolta Feedback",
+        "cover_title": "RACCOLTA FEEDBACK",
+        "cover_subtitle": "Per la demo di Liberi di essere",
+    },
 ]
 
 
@@ -147,8 +162,53 @@ def inline(text: str) -> str:
     return text
 
 
-def make_footer(page_title: str):
+def draw_cover(canvas, cover_title: str, cover_subtitle: str) -> None:
+    """Disegna la copertina in stile BnsStudio (pagina 1)."""
+    width, height = A4
+    center = width / 2.0
+    canvas.saveState()
+
+    # Logo BnsStudio centrato in alto
+    if LOGO.exists():
+        img = ImageReader(str(LOGO))
+        iw, ih = img.getSize()
+        logo_w = 5.7 * cm
+        logo_h = logo_w * ih / iw
+        canvas.drawImage(
+            img,
+            center - logo_w / 2.0,
+            height - 3.1 * cm - logo_h,
+            width=logo_w,
+            height=logo_h,
+            mask="auto",
+            preserveAspectRatio=True,
+        )
+
+    # Titolo grande centrato verticalmente
+    canvas.setFillColor(colors.HexColor("#111111"))
+    canvas.setFont("Helvetica-Bold", 30)
+    canvas.drawCentredString(center, height * 0.5, cover_title)
+
+    # Sottotitolo
+    canvas.setFillColor(colors.HexColor("#333333"))
+    canvas.setFont("Helvetica", 15)
+    canvas.drawCentredString(center, height * 0.5 - 0.95 * cm, cover_subtitle)
+
+    # Nota a piè pagina in corsivo
+    canvas.setFillColor(MUTE)
+    canvas.setFont("Helvetica-Oblique", 9)
+    canvas.drawCentredString(center, 1.6 * cm, COVER_FOOTER)
+
+    canvas.restoreState()
+
+
+def make_footer(page_title: str, cover_title: str, cover_subtitle: str):
     def footer(canvas, doc):
+        # Pagina 1 = copertina, senza intestazione/numero di pagina
+        if doc.page == 1:
+            draw_cover(canvas, cover_title, cover_subtitle)
+            return
+
         canvas.saveState()
         width, height = A4
         left, right = 2.0 * cm, width - 2.0 * cm
@@ -165,8 +225,8 @@ def make_footer(page_title: str):
         canvas.line(left, 1.35 * cm, right, 1.35 * cm)
         canvas.setFont("Helvetica", 7.5)
         canvas.setFillColor(MUTE)
-        canvas.drawString(left, 1.05 * cm, "BNS STUDIO  ·  Studio creativo digitale")
-        canvas.drawRightString(right, 1.05 * cm, f"Pagina {doc.page}")
+        canvas.drawString(left, 1.05 * cm, "BnsStudio  ·  Studio creativo digitale")
+        canvas.drawRightString(right, 1.05 * cm, f"Pagina {doc.page - 1}")
         canvas.restoreState()
 
     return footer
@@ -222,7 +282,7 @@ def build_story(md: Path, st, content_width: float):
 
         # Titolo documento
         if line.startswith("# "):
-            story.append(Paragraph("BNS STUDIO&nbsp;&nbsp;—&nbsp;&nbsp;CONSEGNA DEMO", st["eyebrow"]))
+            story.append(Paragraph("BnsStudio&nbsp;&nbsp;—&nbsp;&nbsp;Consegna demo", st["eyebrow"]))
             story.append(Paragraph(inline(line[2:]), st["title"]))
             seen_title = True
             i += 1
@@ -314,9 +374,10 @@ def main() -> None:
     left = right = 2.0 * cm
     content_width = A4[0] - left - right
     generated = []
-    for src_name, out_name, page_title in DOCS:
-        src = HERE / src_name
-        out = HERE / out_name
+    for spec in DOCS:
+        src = HERE / spec["src"]
+        out = HERE / spec["out"]
+        page_title = spec["page_title"]
         doc = SimpleDocTemplate(
             str(out),
             pagesize=A4,
@@ -325,11 +386,13 @@ def main() -> None:
             topMargin=2.0 * cm,
             bottomMargin=1.9 * cm,
             title=page_title,
-            author="BNS Studio",
+            author="BnsStudio",
             subject="Consegna demo Liberi di Essere",
         )
-        footer = make_footer(page_title)
-        doc.build(build_story(src, st, content_width), onFirstPage=footer, onLaterPages=footer)
+        footer = make_footer(page_title, spec["cover_title"], spec["cover_subtitle"])
+        # Copertina (pagina 1, disegnata su canvas) + contenuto dalla pagina 2
+        story = [Spacer(1, 1), PageBreak()] + build_story(src, st, content_width)
+        doc.build(story, onFirstPage=footer, onLaterPages=footer)
         generated.append(out)
 
     print(f"Generati {len(generated)} PDF:")

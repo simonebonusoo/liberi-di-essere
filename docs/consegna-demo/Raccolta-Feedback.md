@@ -3,7 +3,7 @@
 **Le vostre impressioni**
 
 **Cliente:** Liberi di Essere
-**A cura di:** BNS Studio
+**A cura di:** BnsStudio
 **Periodo:** Luglio 2026
 
 ---
@@ -62,6 +62,6 @@ Questo documento raccoglie le vostre impressioni sulla demo. Potete stamparlo e 
 
 ---
 
-Potete compilare questo documento oppure comunicarci tutto direttamente a BNS Studio con un **messaggio** o una **nota vocale**. Grazie per il vostro contributo: ci aiuta a rendere il sito davvero vostro.
+Potete compilare questo documento oppure comunicarci tutto direttamente a BnsStudio con un **messaggio** o una **nota vocale**. Grazie per il vostro contributo: ci aiuta a rendere il sito davvero vostro.
 
-*BNS Studio*
+*BnsStudio*
