@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Instagram, MapPin, Phone, Mail } from 'lucide-react';
+import { Facebook, Instagram, MapPin, Phone, Mail } from 'lucide-react';
 import { salonConfig } from '@/config/salonConfig';
 
 export function Footer() {
@@ -10,14 +10,26 @@ export function Footer() {
         <div>
           <h3 className="heading-serif text-xl text-white">{name}</h3>
           <p className="mt-1 text-sm text-brand-300">{tagline}</p>
-          <a
-            href={contact.instagram}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-4 inline-flex items-center gap-2 text-sm text-brand-200 hover:text-white"
-          >
-            <Instagram className="h-4 w-4" /> Instagram
-          </a>
+          <div className="mt-4 flex items-center gap-3">
+            <a
+              href={contact.facebook}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-brand-200 hover:bg-white/10 hover:text-white"
+              aria-label="Facebook"
+            >
+              <Facebook className="h-4 w-4" />
+            </a>
+            <a
+              href={contact.instagram}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-brand-200 hover:bg-white/10 hover:text-white"
+              aria-label="Instagram"
+            >
+              <Instagram className="h-4 w-4" />
+            </a>
+          </div>
         </div>
 
         <div>
@@ -66,7 +78,8 @@ export function Footer() {
           <ul className="space-y-2 text-sm text-brand-200">
             <li><Link to="/servizi" className="hover:text-white">Servizi</Link></li>
             <li><Link to="/prenota" className="hover:text-white">Prenota online</Link></li>
-            <li><Link to="/login" className="hover:text-white">Area clienti</Link></li>
+            <li><Link to="/login" className="hover:text-white">Login</Link></li>
+            <li><Link to="/registrati" className="hover:text-white">Registrati</Link></li>
             <li><Link to="/privacy" className="hover:text-white">Privacy policy</Link></li>
             <li><Link to="/cookie" className="hover:text-white">Cookie policy</Link></li>
             <li><Link to="/termini" className="hover:text-white">Termini demo</Link></li>
@@ -74,7 +87,20 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-brand-800 py-5 text-center text-xs text-brand-400">
-        © {new Date().getFullYear()} {name}. Tutti i diritti riservati.
+        <div className="container-page flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-4">
+          <span>© {new Date().getFullYear()} {name}. Tutti i diritti riservati.</span>
+          <span>
+            Powered by{' '}
+            <a
+              href="https://bnsstudio.it"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-brand-200 hover:text-white"
+            >
+              BnsStudio
+            </a>
+          </span>
+        </div>
       </div>
     </footer>
   );

@@ -18,6 +18,7 @@ export function ServiceCard({ service, selected, onSelect }: ServiceCardProps) {
       hover={interactive}
       onClick={() => onSelect?.(service)}
       className={clsx(
+        'flex h-full flex-col',
         interactive && 'cursor-pointer',
         selected && 'ring-2 ring-brand-500 border-brand-300'
       )}
@@ -34,7 +35,7 @@ export function ServiceCard({ service, selected, onSelect }: ServiceCardProps) {
         </span>
       </div>
       {service.description && (
-        <p className="mt-2 text-sm text-brand-500">{service.description}</p>
+        <p className="mt-2 flex-1 text-sm text-brand-500">{service.description}</p>
       )}
       <div className="mt-4 flex items-center gap-1.5 text-sm text-brand-400">
         <Clock className="h-4 w-4" />

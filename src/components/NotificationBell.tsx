@@ -49,7 +49,7 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-40 mt-2 w-80 overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-soft">
+        <div className="fixed left-1/2 top-20 z-50 w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-soft md:absolute md:left-auto md:right-0 md:top-auto md:mt-2 md:w-80 md:translate-x-0">
           <div className="flex items-center justify-between border-b border-brand-100 px-4 py-3">
             <span className="font-semibold text-brand-900">Notifiche</span>
             {unreadCount > 0 && (
@@ -61,7 +61,7 @@ export function NotificationBell() {
               </button>
             )}
           </div>
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-[calc(100dvh-12rem)] overflow-y-auto md:max-h-96">
             {notifications.length === 0 ? (
               <p className="px-4 py-8 text-center text-sm text-brand-400">
                 Nessuna notifica

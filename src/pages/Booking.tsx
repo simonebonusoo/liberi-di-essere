@@ -199,37 +199,39 @@ export function Booking() {
     step === 5;
 
   return (
-    <div className="container-page section">
+    <div className="container-page py-10 sm:section">
       <div className="mx-auto max-w-5xl">
-        <h1 className="heading-serif text-center text-4xl text-brand-900">Prenota il tuo appuntamento</h1>
+        <h1 className="heading-serif text-center text-3xl text-brand-900 sm:text-4xl">Prenota il tuo appuntamento</h1>
         <p className="mx-auto mt-3 max-w-2xl rounded-xl border border-accent-500/30 bg-accent-500/10 px-4 py-3 text-center text-sm text-brand-700">
           <AlertCircle className="mr-1 inline h-4 w-4" />
           {salonConfig.booking.demoBookingMessage}
         </p>
 
-        <div className="mx-auto mt-8 flex max-w-4xl items-center justify-between">
-          {steps.map((label, i) => (
-            <div key={label} className="flex flex-1 items-center">
-              <div className="flex flex-col items-center">
-                <div
-                  className={clsx(
-                    'flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition',
-                    i < step && 'bg-brand-700 text-white',
-                    i === step && 'bg-accent-500 text-brand-900 ring-4 ring-accent-500/25',
-                    i > step && 'bg-brand-100 text-brand-400'
-                  )}
-                >
-                  {i < step ? <Check className="h-4 w-4" /> : i + 1}
+        <div className="mx-auto mt-8 max-w-4xl">
+          <div className="flex items-center justify-between">
+            {steps.map((label, i) => (
+              <div key={label} className="flex flex-1 items-center">
+                <div className="flex flex-col items-center">
+                  <div
+                    className={clsx(
+                      'flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition sm:h-9 sm:w-9 sm:text-sm',
+                      i < step && 'bg-brand-700 text-white',
+                      i === step && 'bg-accent-500 text-brand-900 ring-4 ring-accent-500/25',
+                      i > step && 'bg-brand-100 text-brand-400'
+                    )}
+                  >
+                    {i < step ? <Check className="h-4 w-4" /> : i + 1}
+                  </div>
+                  <span className="mt-1.5 hidden text-xs font-medium text-brand-500 sm:block">
+                    {label}
+                  </span>
                 </div>
-                <span className="mt-1.5 hidden text-xs font-medium text-brand-500 sm:block">
-                  {label}
-                </span>
+                {i < steps.length - 1 && (
+                  <div className={clsx('mx-1 h-0.5 flex-1 sm:mx-2', i < step ? 'bg-brand-700' : 'bg-brand-100')} />
+                )}
               </div>
-              {i < steps.length - 1 && (
-                <div className={clsx('mx-2 h-0.5 flex-1', i < step ? 'bg-brand-700' : 'bg-brand-100')} />
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         <div className="mt-10">
@@ -289,7 +291,7 @@ export function Booking() {
                       setStep(2);
                     }}
                     className={clsx(
-                      'rounded-xl border bg-white px-5 py-4 text-left font-semibold text-brand-900 shadow-card transition hover:border-brand-300',
+                      'min-h-24 rounded-xl border bg-white px-5 py-4 text-left font-semibold text-brand-900 shadow-card transition hover:border-brand-300',
                       category === cat && 'border-brand-600 ring-2 ring-brand-500/20'
                     )}
                   >
@@ -344,7 +346,7 @@ export function Booking() {
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent-500 text-brand-900">
                       <Users className="h-6 w-6" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <h3 className="font-semibold text-brand-900">Qualsiasi operatore disponibile</h3>
                       <p className="text-sm text-brand-500">Il sistema assegna il primo operatore libero e compatibile.</p>
                     </div>
@@ -383,7 +385,7 @@ export function Booking() {
                     description="Prova un altro giorno, un altro operatore o verifica sede e orari."
                   />
                 ) : (
-                  <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4">
+                  <div className="mt-4 grid grid-cols-2 gap-2 min-[380px]:grid-cols-3 sm:grid-cols-4">
                     {slots.map((s) => (
                       <button
                         key={s.label}
@@ -458,11 +460,7 @@ export function Booking() {
                 <p className="mt-5 rounded-xl bg-accent-500/15 px-4 py-3 text-sm text-brand-700">
                   Per confermare devi{' '}
                   <Link to="/login" state={{ from: '/prenota' }} className="font-semibold underline">
-                    accedere
-                  </Link>{' '}
-                  o{' '}
-                  <Link to="/registrati" state={{ from: '/prenota' }} className="font-semibold underline">
-                    registrarti
+                    fare login
                   </Link>
                   .
                 </p>
@@ -475,16 +473,17 @@ export function Booking() {
           )}
         </div>
 
-        <div className="mt-8 flex items-center justify-between">
+        <div className="sticky bottom-0 -mx-4 mt-8 flex items-center justify-between gap-3 border-t border-brand-100 bg-brand-50/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-0">
           <Button
             variant="ghost"
             onClick={() => setStep((s) => Math.max(0, s - 1))}
             disabled={step === 0}
+            className="flex-1 sm:flex-none"
           >
             <ChevronLeft className="h-4 w-4" /> Indietro
           </Button>
           {step < 5 && (
-            <Button onClick={() => canNext && setStep((s) => s + 1)} disabled={!canNext}>
+            <Button onClick={() => canNext && setStep((s) => s + 1)} disabled={!canNext} className="flex-1 sm:flex-none">
               Continua
             </Button>
           )}
@@ -496,9 +495,9 @@ export function Booking() {
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-start justify-between gap-4">
+    <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
       <dt className="text-sm text-brand-500">{label}</dt>
-      <dd className="max-w-[70%] text-right text-sm font-medium text-brand-900">{value}</dd>
+      <dd className="text-sm font-medium text-brand-900 sm:max-w-[70%] sm:text-right">{value}</dd>
     </div>
   );
 }

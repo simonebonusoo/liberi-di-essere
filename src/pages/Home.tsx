@@ -33,23 +33,23 @@ export function Home() {
           style={{ backgroundImage: `url(${c.heroImage})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-brand-900/85 via-brand-900/60 to-brand-900/30" />
-        <div className="container-page relative flex min-h-[78vh] flex-col justify-center py-20">
+        <div className="container-page relative flex min-h-[calc(100svh-4rem)] flex-col justify-center py-16 sm:min-h-[78vh] sm:py-20">
           <div className="max-w-2xl animate-fade-in">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-accent-400 backdrop-blur">
+            <span className="inline-flex max-w-full items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-accent-400 backdrop-blur">
               <Sparkles className="h-4 w-4" /> {c.tagline}
             </span>
             <h1 className="heading-serif mt-5 text-4xl leading-tight text-white sm:text-5xl lg:text-6xl">
               {c.heroTitle}
             </h1>
             <p className="mt-5 max-w-xl text-lg text-brand-100">{c.heroSubtitle}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/prenota">
-                <Button size="lg" variant="cta">
+            <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
+              <Link to="/prenota" className="w-full sm:w-auto">
+                <Button size="lg" variant="cta" className="w-full sm:w-auto">
                   Prenota ora <ArrowRight className="h-5 w-5" />
                 </Button>
               </Link>
-              <Link to="/servizi">
-                <Button size="lg" variant="outline" className="border-white/40 bg-white/10 text-white hover:bg-white/20">
+              <Link to="/servizi" className="w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="w-full border-white/40 bg-white/10 text-white hover:bg-white/20 sm:w-auto">
                   Scopri i servizi
                 </Button>
               </Link>
@@ -63,10 +63,10 @@ export function Home() {
         <SectionHeading eyebrow="I nostri servizi" title="Trattamenti su misura per te" />
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {c.showcaseServices.map((s, index) => (
-            <Reveal key={s.name} delay={index * 80}>
-              <Card hover>
+            <Reveal key={s.name} className="h-full" delay={index * 80}>
+              <Card hover className="flex h-full flex-col">
                 <h3 className="heading-serif text-lg text-brand-900">{s.name}</h3>
-                <p className="mt-2 text-sm text-brand-500">{s.description}</p>
+                <p className="mt-2 flex-1 text-sm text-brand-500">{s.description}</p>
                 <div className="mt-4 flex items-center justify-between">
                   <span className="flex items-center gap-1 text-sm text-brand-400">
                     <Clock className="h-4 w-4" /> {formatDuration(s.duration)}
@@ -108,7 +108,7 @@ export function Home() {
       {/* GALLERY */}
       <section className="section container-page">
         <SectionHeading eyebrow="Portfolio" title="I nostri lavori" />
-        <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:gap-4">
+        <div className="mt-10 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:gap-4">
           {c.gallery.map((src, i) => (
             <Reveal
               key={i}
@@ -153,21 +153,16 @@ export function Home() {
         <SectionHeading eyebrow="Le sedi" title="Copertino e Sant'Isidoro" />
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           {c.locations.map((l, index) => (
-            <Reveal key={l.id} delay={index * 90}>
-              <Card>
-                <div className="flex items-start gap-3">
+            <Reveal key={l.id} className="h-full" delay={index * 90}>
+              <Card className="h-full">
+                <div className="flex h-full items-start gap-3">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
                     <MapPin className="h-5 w-5" />
                   </div>
-                  <div>
+                  <div className="flex min-h-full flex-col">
                     <h3 className="heading-serif text-lg text-brand-900">{l.name}</h3>
                     <p className="mt-1 text-sm font-medium text-brand-700">{l.address}</p>
-                    <p className="mt-2 text-sm text-brand-500">{l.info}</p>
-                    {l.seasonal && (
-                      <span className="mt-3 inline-flex rounded-full bg-accent-500/15 px-3 py-1 text-xs font-semibold text-brand-700">
-                        Sede stagionale demo
-                      </span>
-                    )}
+                    <p className="mt-2 flex-1 text-sm text-brand-500">{l.info}</p>
                   </div>
                 </div>
               </Card>
@@ -203,7 +198,7 @@ export function Home() {
             <iframe
               title="Mappa salone"
               src={c.contact.mapEmbedUrl}
-              className="h-full min-h-[320px] w-full"
+              className="h-full min-h-[280px] w-full sm:min-h-[320px]"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
@@ -220,8 +215,8 @@ export function Home() {
           <p className="mx-auto mt-3 max-w-xl text-brand-200">
             Prenota online in meno di un minuto. Scegli servizio, stylist e orario.
           </p>
-          <Link to="/prenota" className="mt-8 inline-block">
-            <Button size="lg" variant="cta">
+          <Link to="/prenota" className="mt-8 inline-block w-full sm:w-auto">
+            <Button size="lg" variant="cta" className="w-full sm:w-auto">
               Prenota il tuo appuntamento <ArrowRight className="h-5 w-5" />
             </Button>
           </Link>

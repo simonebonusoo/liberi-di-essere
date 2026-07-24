@@ -5,7 +5,6 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { isSupabaseConfigured } from '@/lib/supabase';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -17,37 +16,46 @@ const schema = z.object({
 });
 type FormData = z.infer<typeof schema>;
 
+const demoCredentials = {
+  admin: { email: 'admin@demo.it', password: 'admin1234', target: '/admin' },
+  client: { email: 'cliente@demo.it', password: 'demo1234', target: '/dashboard' },
+};
+
 export function Login() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from ?? '/dashboard';
+  const clientTarget = from.startsWith('/admin') ? '/dashboard' : from;
 
   const {
     register,
-    handleSubmit,
     getValues,
+    setValue,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      email: demoCredentials.client.email,
+      password: demoCredentials.client.password,
+    },
+  });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormData, target: string) => {
     try {
       await signIn(data.email, data.password);
       toast.success('Bentornato!');
-      navigate(from, { replace: true });
+      navigate(target, { replace: true });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Accesso non riuscito');
     }
   };
 
-  const demoLogin = async (email: string, password: string) => {
-    try {
-      await signIn(email, password);
-      toast.success('Accesso demo effettuato');
-      navigate(email.startsWith('cliente') ? '/dashboard' : '/admin', { replace: true });
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Accesso demo non riuscito');
-    }
+  const loginWithDemoRole = async (role: keyof typeof demoCredentials) => {
+    const credentials = demoCredentials[role];
+    setValue('email', credentials.email);
+    setValue('password', credentials.password);
+    await onSubmit(credentials, role === 'client' ? clientTarget : credentials.target);
   };
 
   const handleReset = async () => {
@@ -70,7 +78,7 @@ export function Login() {
           <p className="mt-1 text-sm text-brand-500">Accedi alla tua area riservata</p>
         </div>
         <Card>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form className="space-y-4">
             <Input
               label="Email"
               type="email"
@@ -94,33 +102,27 @@ export function Login() {
             >
               Password dimenticata?
             </button>
-            <Button type="submit" fullWidth loading={isSubmitting}>
-              Accedi
-            </Button>
-          </form>
-          {!isSupabaseConfigured && (
-            <div className="mt-5 space-y-2 border-t border-brand-100 pt-5">
-              <p className="text-center text-xs text-brand-500">
-                Pulsanti disponibili solo in ambiente demo locale.
-              </p>
-              <Button variant="outline" fullWidth onClick={() => demoLogin('superadmin@demo.it', 'super1234')}>
-                Accedi come super admin demo
+            <div className="grid gap-2">
+              <Button
+                type="button"
+                fullWidth
+                loading={isSubmitting}
+                onClick={() => void loginWithDemoRole('admin')}
+              >
+                Accedi come admin
               </Button>
-              <Button variant="outline" fullWidth onClick={() => demoLogin('admin@demo.it', 'admin1234')}>
-                Accedi come amministratore demo
-              </Button>
-              <Button variant="ghost" fullWidth onClick={() => demoLogin('cliente@demo.it', 'demo1234')}>
-                Accedi come cliente demo
+              <Button
+                type="button"
+                variant="secondary"
+                fullWidth
+                loading={isSubmitting}
+                onClick={() => void loginWithDemoRole('client')}
+              >
+                Accedi come cliente
               </Button>
             </div>
-          )}
+          </form>
         </Card>
-        <p className="mt-6 text-center text-sm text-brand-500">
-          Non hai un account?{' '}
-          <Link to="/registrati" state={{ from }} className="font-semibold text-brand-800 hover:underline">
-            Registrati
-          </Link>
-        </p>
       </div>
     </div>
   );

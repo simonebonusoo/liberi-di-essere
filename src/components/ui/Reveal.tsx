@@ -16,6 +16,13 @@ export function Reveal({ children, className, delay = 0, amount = 0.2 }: RevealP
     const node = ref.current;
     if (!node || visible) return;
 
+    // Fallback di sicurezza: se IntersectionObserver non è disponibile
+    // (Safari molto datati) mostra subito il contenuto invece di lasciarlo nascosto.
+    if (typeof IntersectionObserver === 'undefined') {
+      setVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {

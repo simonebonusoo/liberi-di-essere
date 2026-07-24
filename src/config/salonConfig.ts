@@ -33,6 +33,7 @@ export interface SalonConfig {
     city: string;
     phone: string;
     email: string;
+    facebook: string;
     instagram: string;
     mapEmbedUrl: string;
   };
@@ -91,6 +92,7 @@ export const salonConfig: SalonConfig = {
     city: 'Copertino (LE)',
     phone: '+39 000 0000000',
     email: 'demo@liberidiessere.bnsstudio.it',
+    facebook: 'https://facebook.com/liberidiessere_demo',
     instagram: 'https://instagram.com/liberidiessere_demo',
     mapEmbedUrl:
       'https://www.google.com/maps?q=Via+Madonna+delle+Grazie+102+73043+Copertino+LE&output=embed',

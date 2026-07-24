@@ -67,7 +67,7 @@ export function AdminLayout() {
       </nav>
       <div className="mt-auto shrink-0 border-t border-white/10 p-4">
         <p className="truncate px-2 text-[11px] font-semibold uppercase tracking-widest text-accent-400">
-          admin.chadeo.it
+          Pannello amministrativo
         </p>
         <p className="mt-1 truncate px-2 text-xs text-brand-300">{profile?.email}</p>
         <button
