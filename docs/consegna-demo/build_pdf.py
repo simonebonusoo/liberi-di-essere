@@ -47,6 +47,28 @@ try:
 except Exception:
     COVER_TITLE_FONT = "Helvetica-Bold"
 
+# Font Gilroy Light per il sottotitolo di copertina (con fallback a Helvetica).
+GILROY_FONT = HERE / "assets" / "Gilroy-Light.ttf"
+try:
+    pdfmetrics.registerFont(TTFont("Gilroy-Light", str(GILROY_FONT)))
+    COVER_SUBTITLE_FONT = "Gilroy-Light"
+except Exception:
+    COVER_SUBTITLE_FONT = "Helvetica"
+
+# Tracking (spaziatura tra caratteri) in punti per gli elementi di copertina.
+COVER_TITLE_TRACKING = -0.8
+COVER_SUBTITLE_TRACKING = -0.70
+
+
+def draw_centered_tracked(canvas, cx, y, text, font, size, tracking=0.0):
+    """Testo centrato tenendo conto del tracking (drawCentredString lo ignora)."""
+    width = pdfmetrics.stringWidth(text, font, size) + tracking * max(len(text) - 1, 0)
+    text_obj = canvas.beginText(cx - width / 2.0, y)
+    text_obj.setFont(font, size)
+    text_obj.setCharSpace(tracking)
+    text_obj.textOut(text)
+    canvas.drawText(text_obj)
+
 # Palette allineata a src/config/salonConfig.ts
 BRAND = colors.HexColor("#2f665f")       # verde salvia scuro
 BRAND_DEEP = colors.HexColor("#22433f")  # verde profondo per titoli
@@ -194,16 +216,20 @@ def draw_cover(canvas, cover_title: str, cover_subtitle: str) -> None:
             preserveAspectRatio=True,
         )
 
-    # Titolo grande centrato verticalmente (font display Phonk)
+    # Titolo grande centrato verticalmente (font display Phonk, tracking stretto)
     canvas.setFillColor(colors.HexColor("#111111"))
     title_size = 34 if COVER_TITLE_FONT == "Phonk" else 30
-    canvas.setFont(COVER_TITLE_FONT, title_size)
-    canvas.drawCentredString(center, height * 0.5, cover_title)
+    draw_centered_tracked(
+        canvas, center, height * 0.5, cover_title,
+        COVER_TITLE_FONT, title_size, COVER_TITLE_TRACKING,
+    )
 
-    # Sottotitolo
+    # Sottotitolo (font Gilroy Light, tracking stretto)
     canvas.setFillColor(colors.HexColor("#333333"))
-    canvas.setFont("Helvetica", 15)
-    canvas.drawCentredString(center, height * 0.5 - 0.95 * cm, cover_subtitle)
+    draw_centered_tracked(
+        canvas, center, height * 0.5 - 0.95 * cm, cover_subtitle,
+        COVER_SUBTITLE_FONT, 15, COVER_SUBTITLE_TRACKING,
+    )
 
     # Nota a piè pagina in corsivo
     canvas.setFillColor(MUTE)
