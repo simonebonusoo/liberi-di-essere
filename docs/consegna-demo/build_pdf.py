@@ -23,6 +23,8 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm, mm
 from reportlab.lib.utils import ImageReader
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (
     Flowable,
     PageBreak,
@@ -36,6 +38,14 @@ from reportlab.platypus import (
 HERE = Path(__file__).resolve().parent
 LOGO = HERE / "assets" / "bnsstudio-logo.png"
 COVER_FOOTER = "Demo valida fino al 31 Luglio"
+
+# Font display Phonk per i titoli di copertina (con fallback a Helvetica-Bold).
+PHONK_FONT = HERE / "assets" / "Phonk-Regular-DEMO.otf"
+try:
+    pdfmetrics.registerFont(TTFont("Phonk", str(PHONK_FONT)))
+    COVER_TITLE_FONT = "Phonk"
+except Exception:
+    COVER_TITLE_FONT = "Helvetica-Bold"
 
 # Palette allineata a src/config/salonConfig.ts
 BRAND = colors.HexColor("#2f665f")       # verde salvia scuro
@@ -184,9 +194,10 @@ def draw_cover(canvas, cover_title: str, cover_subtitle: str) -> None:
             preserveAspectRatio=True,
         )
 
-    # Titolo grande centrato verticalmente
+    # Titolo grande centrato verticalmente (font display Phonk)
     canvas.setFillColor(colors.HexColor("#111111"))
-    canvas.setFont("Helvetica-Bold", 30)
+    title_size = 34 if COVER_TITLE_FONT == "Phonk" else 30
+    canvas.setFont(COVER_TITLE_FONT, title_size)
     canvas.drawCentredString(center, height * 0.5, cover_title)
 
     # Sottotitolo
