@@ -170,6 +170,15 @@ export function Navbar() {
             <div className="flex flex-col items-center gap-4 text-sm tracking-[0.12em] text-brand-700">
               {session ? (
                 <>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setOpen(false)}
+                      className="px-3 py-2 transition hover:text-accent-600"
+                    >
+                      Gestionale
+                    </Link>
+                  )}
                   <Link
                     to="/dashboard"
                     onClick={() => setOpen(false)}
